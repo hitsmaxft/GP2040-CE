@@ -129,6 +129,20 @@ const schema = yup.object().shape({
 		.label('PS4 Controller Type'),
 });
 
+// deep copy and swp
+const swapTpShareLabelsButtons = (buttons, swap = true) => {
+	if (swap) {
+		const buttonLabelS1 = buttons['S1'];
+		const buttonLabelA2 = buttons['A2'];
+		return {
+			...buttons,
+			"S1": buttonLabelA2,
+			"A2": buttonLabelS1,
+		}
+	} else {
+		return buttons
+	}
+}
 const FormContext = ({ setButtonLabels }) => {
 	const { values, setValues } = useFormikContext();
 	const { setLoading } = useContext(AppContext);
@@ -222,12 +236,7 @@ export default function SettingsPage() {
 
 	const { buttonLabelType, swapTpShareLabels } = buttonLabels;
 
-	const buttonLabelS1 =
-		BUTTONS[buttonLabelType][
-			swapTpShareLabels && buttonLabelType === 'ps4' ? 'A2' : 'S1'
-		];
-	const buttonLabelS2 = BUTTONS[buttonLabelType]['S2'];
-	const buttonLabelA1 = BUTTONS[buttonLabelType]['A1'];
+	const currentButtonLabels= swapTpShareLabelsButtons(BUTTONS[buttonLabelType], (buttonLabelType === 'ps4' && swapTpShareLabels));
 
 	const { t } = useTranslation('');
 
@@ -507,7 +516,7 @@ export default function SettingsPage() {
 																		key={`hotkey-${i}-button${i2}`}
 																		value={o.value}
 																	>
-																		{ (o.label in BUTTONS[buttonLabelType])? BUTTONS[buttonLabelType][o.label]:o.label}
+																		{ (o.label in currentButtonLabels)? currentButtonLabels[o.label]:o.label}
 																	</option>
 																))}
 															</Form.Select>
@@ -537,7 +546,7 @@ export default function SettingsPage() {
 															key={`hotkey-${i}-buttonZero-${i2}`}
 															value={o.value}
 														>
-														{ (o.label in BUTTONS[buttonLabelType])? BUTTONS[buttonLabelType][o.label]:o.label}
+														{ (o.label in currentButtonLabels)? currentButtonLabels[o.label]:o.label}
 														</option>
 													))}
 												</Form.Select>
