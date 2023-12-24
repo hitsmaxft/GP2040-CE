@@ -18,6 +18,7 @@ const { pico: picoController } = JSON.parse(
 );
 
 const port = process.env.PORT || 8080;
+const hostname = process.env.HOST || 'localhost';
 
 const app = express();
 app.use(cors());
@@ -582,6 +583,6 @@ app.post('/api/*', (req, res) => {
 	return res.send(req.body);
 });
 
-app.listen(port, () => {
-	console.log(`Dev app listening at http://localhost:${port}`);
+app.listen(port, hostname, () => {
+	console.log(`Dev app listening at http://${hostname}:${port}`);
 });
