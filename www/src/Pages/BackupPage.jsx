@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef, useContext, version } from 'react';
 import { AppContext } from '../Contexts/AppContext';
 import { Button, Form, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +48,10 @@ const API_BINDING = {
 export default function BackupPage() {
 	const inputFileSelect = useRef();
 
+	const [currentVersion, setCurrentVersion] = useState(
+		import.meta.env.VITE_CURRENT_VERSION,
+	);
+
 	const [optionState, setOptionStateData] = useState({});
 	const [checkValues, setCheckValues] = useState({}); // lazy approach
 
@@ -67,6 +71,12 @@ export default function BackupPage() {
 			setOptionStateData(exportData);
 		}
 		fetchData();
+
+		WebApi.getFirmwareVersion(setLoading)
+			.then(({ version, boardConfigLabel, boardConfigFileName, boardConfig }) => {
+				setCurrentVersion(version);
+			})
+			.catch(console.error);
 
 		// setup defaults
 		function getDefaultValues() {
@@ -139,7 +149,7 @@ export default function BackupPage() {
 		}
 
 		const fileDate = new Date().toISOString().replace(/[^0-9]/g, '');
-		const name = FILENAME.replace('{DATE}', fileDate);
+		const name = FILENAME.replace('{DATE}', fileDate +"_"+ currentVersion);
 		const json = JSON.stringify(exportData);
 		const file = new Blob([json], { type: 'text/json;charset=utf-8' });
 
