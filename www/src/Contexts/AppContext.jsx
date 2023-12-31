@@ -15,12 +15,17 @@ yup.addMethod(yup.string, 'validateColor', function () {
 	);
 });
 
+const isEnabledValue = (value) => {
+	v = parseInt(value)
+	return !isNaN(v) && value > 0
+}
+
 yup.addMethod(
 	yup.NumberSchema,
 	'validateSelectionWhenValue',
 	function (name, choices) {
 		return this.when(name, {
-			is: (value) => !isNaN(parseInt(value)),
+			is: isEnabledValue,
 			then: () => this.required().oneOf(choices.map((o) => o.value)),
 			otherwise: () => yup.mixed().notRequired(),
 		});
@@ -29,7 +34,7 @@ yup.addMethod(
 
 yup.addMethod(yup.NumberSchema, 'validateNumberWhenValue', function (name) {
 	return this.when(name, {
-		is: (value) => !isNaN(parseInt(value)),
+		is: isEnabledValue,
 		then: () => this.required(),
 		otherwise: () => yup.mixed().notRequired().strip(),
 	});
@@ -52,7 +57,7 @@ yup.addMethod(
 	'validateRangeWhenValue',
 	function (name, min, max) {
 		return this.when(name, {
-			is: (value) => !isNaN(parseInt(value)),
+			is: (value) => value>0,
 			then: () => this.required().min(min).max(max),
 			otherwise: () => yup.mixed().notRequired().strip(),
 		});
